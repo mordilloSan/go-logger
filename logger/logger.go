@@ -39,14 +39,19 @@ const (
 // If Levels is nil, Init uses LOGGER_LEVELS when set; otherwise all levels are enabled.
 type Config struct {
 	// Levels limits which log levels are enabled; nil falls back to LOGGER_LEVELS or all levels.
+	// Default: nil (all levels enabled)
 	Levels []Level
 	// Colorize enables ANSI color output for console logs.
+	// Default: false
 	Colorize bool
 	// FilePath writes logs to this file (created/appended); empty disables file logging.
+	// Default: "" (file logging disabled)
 	FilePath string
 	// IncludeLevelPrefix adds the [LEVEL] tag in console and file output.
+	// Default: false
 	IncludeLevelPrefix bool
 	// IncludeCallerTag adds the [package.Function:line] tag in log messages.
+	// Default: false
 	IncludeCallerTag bool
 }
 
