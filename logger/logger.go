@@ -39,14 +39,19 @@ const (
 // If Levels is nil, Init uses LOGGER_LEVELS when set; otherwise all levels are enabled.
 type Config struct {
 	// Levels limits which log levels are enabled; nil falls back to LOGGER_LEVELS or all levels.
+	// Default: nil (all levels enabled)
 	Levels []Level
 	// Colorize enables ANSI color output for console logs.
+	// Default: false
 	Colorize bool
 	// FilePath writes logs to this file (created/appended); empty disables file logging.
+	// Default: "" (file logging disabled)
 	FilePath string
 	// IncludeLevelPrefix adds the [LEVEL] tag in console and file output.
+	// Default: false
 	IncludeLevelPrefix bool
 	// IncludeCallerTag adds the [package.Function:line] tag in log messages.
+	// Default: false
 	IncludeCallerTag bool
 }
 
@@ -108,6 +113,14 @@ var (
 
 // Init initializes the logger with configurable levels and optional color output.
 // If Config.Levels is nil, LOGGER_LEVELS is used when set; otherwise all levels are enabled.
+//
+// Output routing:
+//   - DEBUG, INFO, NOTICE are written to stdout
+//   - WARNING, ERROR, CRIT, ALERT, EMERG, FATAL are written to stderr
+//
+// If Config.FilePath is set but the file cannot be opened, an error is written to stderr
+// and logging continues to console only (non-fatal).
+//
 // Call Close() to properly close the log file when shutting down.
 func Init(config Config) {
 	enabledLevels = resolveLevels(config.Levels)
@@ -201,6 +214,14 @@ func allLevelsEnabled() map[Level]bool {
 
 // parseLevels parses a comma-separated list of level names.
 // Empty string enables all levels.
+//
+// Accepted values (case-insensitive):
+//   - DEBUG, INFO, NOTICE, WARNING, ERROR, FATAL
+//   - CRIT or CRITICAL
+//   - ALERT
+//   - EMERG or EMERGENCY
+//
+// Example: "DEBUG,INFO,ERROR" or "info,warning,error"
 func parseLevels(s string) map[Level]bool {
 	m := map[Level]bool{}
 	s = strings.TrimSpace(s)
