@@ -113,6 +113,14 @@ var (
 
 // Init initializes the logger with configurable levels and optional color output.
 // If Config.Levels is nil, LOGGER_LEVELS is used when set; otherwise all levels are enabled.
+//
+// Output routing:
+//   - DEBUG, INFO, NOTICE are written to stdout
+//   - WARNING, ERROR, CRIT, ALERT, EMERG, FATAL are written to stderr
+//
+// If Config.FilePath is set but the file cannot be opened, an error is written to stderr
+// and logging continues to console only (non-fatal).
+//
 // Call Close() to properly close the log file when shutting down.
 func Init(config Config) {
 	enabledLevels = resolveLevels(config.Levels)
@@ -206,6 +214,14 @@ func allLevelsEnabled() map[Level]bool {
 
 // parseLevels parses a comma-separated list of level names.
 // Empty string enables all levels.
+//
+// Accepted values (case-insensitive):
+//   - DEBUG, INFO, NOTICE, WARNING, ERROR, FATAL
+//   - CRIT or CRITICAL
+//   - ALERT
+//   - EMERG or EMERGENCY
+//
+// Example: "DEBUG,INFO,ERROR" or "info,warning,error"
 func parseLevels(s string) map[Level]bool {
 	m := map[Level]bool{}
 	s = strings.TrimSpace(s)
